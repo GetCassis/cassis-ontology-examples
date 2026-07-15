@@ -1,0 +1,11 @@
+- cardinality: many_to_one
+  column_pairs:
+  - from_column: customer_id
+    to_column: id
+  condition_sql: public.orders.customer_id = public.customers.id
+  description: Each order belongs to exactly one customer; a customer can have many orders.
+  from_schema: public
+  from_table: orders
+  source: manual
+  to_schema: public
+  to_table: customers

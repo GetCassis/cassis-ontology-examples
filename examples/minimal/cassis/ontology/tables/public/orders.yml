@@ -1,0 +1,43 @@
+columns:
+- data_type: uuid
+  description: Unique identifier of the order.
+  name: id
+  nullable: false
+  ordinal: 0
+- data_type: uuid
+  description: Customer who placed the order; join to customers.id.
+  name: customer_id
+  nullable: false
+  ordinal: 1
+- data_type: text
+  description: 'Order lifecycle status. Values: pending, completed, cancelled. Revenue counts completed orders only.'
+  name: status
+  nullable: false
+  ordinal: 2
+  synonyms:
+  - order status
+- data_type: numeric
+  description: Order total in USD, tax included. Present on every order, including cancelled ones.
+  name: amount
+  nullable: false
+  ordinal: 3
+  synonyms:
+  - order total
+  - order value
+- data_type: timestamptz
+  description: When the order was placed (UTC).
+  name: created_at
+  nullable: false
+  ordinal: 4
+  synonyms:
+  - order date
+description: 'A purchase placed by a customer. One row per order (grain: id). amount is the full order total in USD, tax included.
+  Cancelled orders keep their amount: filter status = ''completed'' for any revenue or sales figure.'
+domain_path: sales
+grain:
+- id
+schema_name: public
+synonyms:
+- order
+- purchase
+table_name: orders

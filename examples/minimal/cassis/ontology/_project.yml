@@ -1,0 +1,15 @@
+context_md: |-
+  Acme is a small direct-to-consumer store: people sign up as customers and place orders. Two source tables in the
+  Postgres schema public: customers (one row per person) and orders (one row per order).
+
+  Rules that apply to every question:
+
+  - Amounts (orders.amount) are in USD, tax included. Always render amounts as USD; never use another currency symbol.
+  - Revenue, sales and turnover all mean the governed total_revenue metric: completed orders only. Use the metric
+    definition exactly; do not re-derive it.
+  - An order is exactly one of pending, completed or cancelled (orders.status). Cancelled orders keep their amount, so
+    never sum amounts without a status filter.
+  - Count customers by customers.id; there is one row per real person.
+  - Timestamps are UTC; "on a given day" means the UTC calendar day.
+description: Global context for the Acme direct-to-consumer store.
+display_name: Acme store

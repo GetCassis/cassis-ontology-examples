@@ -1,0 +1,13 @@
+description: Sum of order amounts in USD over completed orders. Excludes pending and cancelled orders.
+display_name: Total revenue
+domain_path: sales
+expression: SUM(amount)
+filters: status = 'completed'
+name: total_revenue
+synonyms:
+- revenue
+- sales
+- turnover
+table_name: orders
+table_schema: public
+unit: USD

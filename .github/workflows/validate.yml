@@ -1,0 +1,33 @@
+# Validates the example context trees in this repo on every push and pull request.
+#
+# This file doubles as a template for your own repo:
+#   1. Copy tools/validate.py into your repo (keep the path, or adjust below).
+#   2. Copy this workflow into .github/workflows/.
+#   3. Replace the two "Validate ..." steps with one step for your own tree:
+#        - name: Validate the context
+#          run: python tools/validate.py .
+#      (validate.py auto-detects the cassis/ontology/ tree from your repo root.)
+#
+# Cassis itself also posts a "cassis / ontology validation" check on pull requests
+# that touch the tree; this workflow gives you the same verdict without leaving CI.
+
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pyyaml
+      - name: Validate the minimal example
+        run: python tools/validate.py examples/minimal
+      - name: Validate the Stallora example
+        run: python tools/validate.py examples/stallora

@@ -1,0 +1,25 @@
+description: 'Number of sellers with at least 5 delivered orders in the trailing 30 days (equivalently, the previous calendar
+  month) — the business definition of an "active seller". A seller counts once per distinct delivered ORDER_ID they fulfilled
+  in the window, even if the order has multiple items from that seller. Because the definition requires a per-seller GROUP
+  BY with HAVING COUNT >= 5, the expression is a scalar subquery: use it as-is in a SELECT rather than re-deriving.'
+display_name: Active sellers
+domain_path: marketplace
+expression: (SELECT COUNT(*) FROM (SELECT "STALLORA"."ORDER_ITEMS"."SELLER_ID" FROM "STALLORA"."ORDER_ITEMS" JOIN "STALLORA"."FCT_ORDERS"
+  ON "STALLORA"."ORDER_ITEMS"."ORDER_ID" = "STALLORA"."FCT_ORDERS"."ORDER_ID" WHERE "STALLORA"."FCT_ORDERS"."IS_DELIVERED"
+  = TRUE AND "STALLORA"."FCT_ORDERS"."ORDER_PURCHASE_TIMESTAMP" >= DATEADD(day, -30, CURRENT_DATE) AND "STALLORA"."FCT_ORDERS"."ORDER_PURCHASE_TIMESTAMP"
+  < CURRENT_DATE GROUP BY "STALLORA"."ORDER_ITEMS"."SELLER_ID" HAVING COUNT(DISTINCT "STALLORA"."ORDER_ITEMS"."ORDER_ID")
+  >= 5))
+name: active_sellers
+notes: 'Business rule (user-authoritative): an active seller has >= 5 delivered orders in the trailing 30 days (equivalently,
+  the previous calendar month). Do NOT use DIM_SELLER.DELIVERED_ORDERS — that is a lifetime rollup with no recency window
+  and will produce the wrong answer. Count distinct delivered orders per seller (an order with multiple items from the same
+  seller still counts as one order for that seller). The metric intentionally uses CURRENT_DATE for the trailing-30-day window;
+  if the user asks about a specific month or period instead, override the window in the SQL and keep the >= 5 delivered-orders-per-seller
+  threshold.'
+synonyms:
+- active seller count
+- active sellers
+- selling sellers
+table_name: ORDER_ITEMS
+table_schema: STALLORA
+unit: sellers

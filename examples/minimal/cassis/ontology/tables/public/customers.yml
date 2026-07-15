@@ -1,0 +1,39 @@
+columns:
+- data_type: uuid
+  description: Unique identifier of the customer. One row per real person.
+  name: id
+  nullable: false
+  ordinal: 0
+- data_type: text
+  description: Signup email, unique per customer.
+  name: email
+  nullable: false
+  ordinal: 1
+- data_type: text
+  description: Customer display name.
+  name: full_name
+  ordinal: 2
+- data_type: text
+  description: ISO 3166-1 alpha-2 country code, uppercase (e.g. 'US', 'DE'). NULL for roughly 5% of rows.
+  name: country_code
+  ordinal: 3
+  synonyms:
+  - country
+- data_type: timestamptz
+  description: When the customer signed up (UTC).
+  name: created_at
+  nullable: false
+  ordinal: 4
+  synonyms:
+  - signup date
+description: 'A person who signed up at the store. One row per customer (grain: id). country_code is NULL for roughly 5% of
+  rows (signups that predate the field); treat NULL as unknown, do not drop those rows.'
+domain_path: sales
+grain:
+- id
+schema_name: public
+synonyms:
+- customer
+- buyer
+- shopper
+table_name: customers
