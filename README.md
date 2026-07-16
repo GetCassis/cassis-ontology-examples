@@ -6,13 +6,13 @@ Cassis stores the whole context as a plain YAML tree in a GitHub repository you 
 
 This repository documents the process and the file format, and ships working examples you can copy.
 
-> **A note on naming:** the file paths and GitHub check names currently use the word *ontology* (`cassis/ontology/`, `cassis / ontology validation`). Same thing — the docs here say *context*, the paths say `ontology`.
+> **A note on naming:** the GitHub check-run names and the CLI command still use the word *ontology* (`cassis / ontology validation`, `cassis ontology check`). Same thing — the docs here say *context*.
 
 ## Start here
 
 1. [How it works](docs/how-it-works.md) — what a context is, and how the git sync model works
 2. [Getting started](docs/getting-started.md) — install the Cassis GitHub App, connect your repo, first sync
-3. [Repository layout](docs/repository-layout.md) — the `cassis/ontology/` tree
+3. [Repository layout](docs/repository-layout.md) — the `cassis/` tree
 4. [File reference](docs/file-reference.md) — every file type, field by field
 5. [Authoring guide](docs/authoring-guide.md) — how to write a context that makes the agent accurate
 6. [Day-to-day workflow](docs/workflow.md) — branches, pull requests, validation checks, troubleshooting
@@ -22,22 +22,22 @@ This repository documents the process and the file format, and ships working exa
 - [`examples/minimal/`](examples/minimal/) — the smallest realistic context (a tiny Postgres schema). Copy it as your starting skeleton.
 - [`examples/stallora/`](examples/stallora/) — a complete, well-authored context for Stallora, our demo marketplace dataset on Snowflake. This is what "done" looks like.
 
-## Validate locally
+## Validate before you push
 
-[`tools/validate.py`](tools/validate.py) runs the same checks Cassis runs on your pull requests — YAML parsing, required fields, and canonical formatting — so you can catch problems before you push:
+The official CLI, [`cassis-cli`](https://pypi.org/project/cassis-cli/), runs the **exact same** three-stage validation as the `cassis / ontology validation` check on your pull requests — YAML parsing, canonical round-trip, and import validation:
 
 ```bash
-pip install pyyaml
-python tools/validate.py .        # check
-python tools/validate.py . --fix  # rewrite files in canonical form
+pip install cassis-cli
+export CASSIS_API_KEY=sk-k6-...   # create one under Organization settings → API keys
+cassis ontology check             # from your repo root
 ```
 
-The script is standalone — copy it into your own repository to run it there, or run it from a checkout of this repo pointing at yours (`python tools/validate.py /path/to/your-repo`). The GitHub Action in [`.github/workflows/validate.yml`](.github/workflows/validate.yml) shows how to run it in your own CI.
+The check runs server-side via the Cassis API, so it needs network access and an API key — but it is a pure function of the files it uploads: nothing in your project is read or written, the key only authenticates the caller. Success prints `✓ YAML parsing, round-trip and import validation passed (N files).`; failures print one finding per line. Run it before you push, locally or in CI — the GitHub Action in [`.github/workflows/validate.yml`](.github/workflows/validate.yml) is a working template, and the [workflow guide](docs/workflow.md#running-the-check-in-your-own-ci) has the GitLab CI variant.
 
 ## The short version
 
 ```text
-edit YAML under cassis/ontology/  →  open a PR  →  "cassis / ontology validation" check
+edit YAML under cassis/  →  open a PR  →  "cassis / ontology validation" check
         →  merge to your default branch  →  Cassis imports it  →  new context version
 ```
 

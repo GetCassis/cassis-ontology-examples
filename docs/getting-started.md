@@ -6,7 +6,7 @@ This walkthrough takes you from nothing to a context that syncs between GitHub a
 
 - A Cassis account with the **organization admin** role — the GitHub settings pages are admin-only.
 - Permission to **install a GitHub App** on the GitHub organization (or personal account) that owns the repository.
-- A **repository**. A dedicated repo works well, but an existing one (your dbt repo, for instance) is fine too: Cassis only reads and writes paths under `cassis/`, and never touches anything else in the repository.
+- A **repository**. A dedicated repo works well, but an existing one (your dbt repo, for instance) is fine too: Cassis only reads and writes files under the project's **Path** directory (`cassis/` by default — see step 2), and never touches anything else in the repository. The flip side: don't keep anything else *inside* that directory — every export from Cassis replaces it wholesale.
 - The repository's **default branch must be named `main`** — Cassis reads from and writes to the branch `main` specifically.
 
 ## Step 1 — connect GitHub to your Cassis organization
@@ -23,9 +23,14 @@ This is a one-time, organization-level step.
 Still on the "Organization · GitHub" page:
 
 1. In the **Project configuration** section, select your project.
-2. In the **Repository** field, enter the repository as `owner/name` (the placeholder shows the format: `owner/repo`) and click **Save**.
+2. In the **Repository** field, enter the repository as `owner/name` (the placeholder shows the format: `owner/repo`).
+3. In the **Path** field, leave the default `cassis` unless you want the context exported under a different repo directory. Nested paths work (`dbt/cassis`); segments may only contain letters, digits, `.`, `-` and `_`. Cassis writes the whole context tree **directly under** this directory and replaces its contents on every export, so pick a directory that contains nothing else. (Repositories connected before the Path setting existed have their tree at `cassis/ontology/` — see the [legacy layout note](repository-layout.md#legacy-layout).)
+4. Leave **Run ontology checks on Cassis-created branches** on unless the PR validation check gets in your way on Cassis-opened branches — when off, it is skipped for branches Cassis opens (`cassis/*`) and still runs on all other branches.
+5. Click **Save**.
 
-Cassis verifies that its App installation can actually access that repository. If it can't, saving fails with:
+A repository can be connected to **one project only** — saving a repo that another project already uses fails with "This repository is already connected to another project. Disconnect it there first."
+
+Cassis also verifies that its App installation can actually access the repository. If it can't, saving fails with:
 
 > The repository 'owner/repo' is not accessible by your organization's GitHub App installation. Install the Cassis GitHub App on that repository's account, or choose a repository it owns.
 
@@ -33,7 +38,7 @@ Cassis verifies that its App installation can actually access that repository. I
 
 ## Step 3 — seed the repository
 
-Two ways to get the first `cassis/ontology/` tree into git, depending on where your context lives today.
+Two ways to get the first `cassis/` tree into git, depending on where your context lives today.
 
 ### Option A — you already have a context in Cassis
 
@@ -52,9 +57,9 @@ From here on, the repo and Cassis agree, and you can move to the [day-to-day wor
 ### Option B — author from scratch in git
 
 1. Copy [`examples/minimal/`](../examples/minimal/)'s `cassis/` directory into the root of your repository.
-2. Copy [`tools/validate.py`](../tools/validate.py) into your repository too (and optionally [`.github/workflows/validate.yml`](../.github/workflows/validate.yml) to run it in your CI) — the validator lives in *this* repo, not in the tree Cassis manages. Alternatively, run it from a checkout of this repo, pointing at yours: `python tools/validate.py /path/to/your-repo`.
+2. Set up the CLI check: `pip install cassis-cli`, create an API key in Cassis under **Organization settings → API keys** (keys start with `sk-k6-`), and expose it as `CASSIS_API_KEY`. Optionally add the check to your CI too — see [running the check in your own CI](workflow.md#running-the-check-in-your-own-ci).
 3. Edit the tree to match your warehouse — schema and table names must match exactly (see the [file reference](file-reference.md) and [authoring guide](authoring-guide.md)).
-4. Validate locally: `python tools/validate.py .`.
+4. Validate before you push: `cassis ontology check` from the repo root (add `--base-path` if you changed the project's **Path** setting).
 5. Commit and push to the **default branch** (or open a PR and merge it — any route that lands the files on the default branch works).
 
 The push triggers the first import.

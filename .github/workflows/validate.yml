@@ -1,15 +1,26 @@
-# Validates the example context trees in this repo on every push and pull request.
+# Validates the example context trees in this repo on every push and pull request,
+# using the official Cassis CLI (`pip install cassis-cli`).
 #
 # This file doubles as a template for your own repo:
-#   1. Copy tools/validate.py into your repo (keep the path, or adjust below).
-#   2. Copy this workflow into .github/workflows/.
-#   3. Replace the two "Validate ..." steps with one step for your own tree:
+#   1. Copy this workflow into .github/workflows/.
+#   2. Replace the two "Validate ..." steps with a single step for your own tree:
 #        - name: Validate the context
-#          run: python tools/validate.py .
-#      (validate.py auto-detects the cassis/ontology/ tree from your repo root.)
+#          run: cassis ontology check
+#          env:
+#            CASSIS_API_KEY: ${{ secrets.CASSIS_API_KEY }}
+#      (run from the repo root; add --base-path if your project's Path setting
+#      isn't the default "cassis".)
+#   3. Add the CASSIS_API_KEY secret to the repo — create the key in Cassis
+#      under Organization settings → API keys (keys start with sk-k6-).
 #
-# Cassis itself also posts a "cassis / ontology validation" check on pull requests
-# that touch the tree; this workflow gives you the same verdict without leaving CI.
+# The check calls the Cassis API, so it needs the secret. The first step below
+# detects whether it is set and skips validation gracefully when it isn't
+# (fork PRs and secretless checkouts don't get access to repo secrets).
+#
+# Cassis itself also posts a "cassis / ontology validation" check on pull
+# requests that touch the tree; this workflow gives you the same verdict
+# inside your own CI — and on GitLab, see the GitLab CI snippet in
+# docs/workflow.md.
 
 name: validate
 
@@ -22,12 +33,27 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
+      - name: Check whether CASSIS_API_KEY is available
+        id: key
+        run: echo "present=${{ secrets.CASSIS_API_KEY != '' }}" >> "$GITHUB_OUTPUT"
+      - name: Note when validation is skipped
+        if: steps.key.outputs.present != 'true'
+        run: echo "CASSIS_API_KEY secret not available — skipping the context checks."
       - uses: actions/checkout@v4
+        if: steps.key.outputs.present == 'true'
       - uses: actions/setup-python@v5
+        if: steps.key.outputs.present == 'true'
         with:
           python-version: "3.12"
-      - run: pip install pyyaml
+      - run: pip install cassis-cli
+        if: steps.key.outputs.present == 'true'
       - name: Validate the minimal example
-        run: python tools/validate.py examples/minimal
+        if: steps.key.outputs.present == 'true'
+        run: cassis ontology check examples/minimal
+        env:
+          CASSIS_API_KEY: ${{ secrets.CASSIS_API_KEY }}
       - name: Validate the Stallora example
-        run: python tools/validate.py examples/stallora
+        if: steps.key.outputs.present == 'true'
+        run: cassis ontology check examples/stallora
+        env:
+          CASSIS_API_KEY: ${{ secrets.CASSIS_API_KEY }}

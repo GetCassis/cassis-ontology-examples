@@ -1,6 +1,6 @@
 # File reference
 
-Field-by-field schema for every file type in the `cassis/ontology/` tree. See [repository layout](repository-layout.md) for where each file lives, and the [authoring guide](authoring-guide.md) for what to write in the fields.
+Field-by-field schema for every file type in the `cassis/` tree. See [repository layout](repository-layout.md) for where each file lives, and the [authoring guide](authoring-guide.md) for what to write in the fields.
 
 All examples are verbatim (trimmed) from the [Stallora example](../examples/stallora/).
 
@@ -17,13 +17,13 @@ All examples are verbatim (trimmed) from the [Stallora example](../examples/stal
 
 Everything else is optional.
 
-**Required at import.** Three rules are enforced only when Cassis *imports* the tree (the sync on the default branch, or a manual pull) — the PR validation check does not catch them, but [`tools/validate.py`](../tools/validate.py) checks all three:
+**Import validation.** Three semantic rules are enforced by the same validation everywhere it runs — the import itself (the sync on the default branch, or a manual pull), the PR check's import-validation stage, and `cassis ontology check`:
 
 - metrics must carry a non-empty `display_name` and `expression`;
 - every `domain_path` (on tables and metrics) must name a domain that exists in the tree;
 - domain paths are lowercase slug segments (`a-z`, `0-9`, `_`, `-`) separated by `/`.
 
-Violating one gets a green validation check but a failing sync — the exact errors are in the [troubleshooting table](workflow.md#troubleshooting).
+Violating one fails the PR validation check with "Ontology validation failed" / `The ontology would be rejected at import: {error}` — a tree that passes the check cannot fail these rules when its merge is synced. The exact errors are in the [troubleshooting table](workflow.md#troubleshooting).
 
 **Default omission.** A field whose value equals its default — or is null, an empty string, or an empty list — is **omitted from the file**, and the canonical form *requires* omitting it. You will never see `nullable: true`, `source: introspected`, `is_virtual: false`, or `parse_ok: true` in a valid tree; writing them makes the file non-canonical and fails validation (see [Canonical form](#canonical-form)). The flip side: these fields only ever appear with their non-default value (`nullable: false`, `source: manual`, `is_virtual: true`, `parse_ok: false`).
 
@@ -60,7 +60,7 @@ One file per table; columns are inline.
 | `table_name` | string | **yes** | — | Physical table name, stored case. Filename derives from it. |
 | `columns` | list | no | *(omitted)* | Inline column objects — see below. |
 | `description` | string | no | *(omitted)* | What a row is, the grain, the gotchas. |
-| `domain_path` | string | no | *(omitted)* | Path of the domain this table lives in (e.g. `marketplace`). Must name a domain that exists in the tree (a `domains/<path>/_domain.yml`), as lowercase slug segments separated by `/` — both enforced at import, not by the PR check. Absent = the table is tracked but not placed in any domain. |
+| `domain_path` | string | no | *(omitted)* | Path of the domain this table lives in (e.g. `marketplace`). Must name a domain that exists in the tree (a `domains/<path>/_domain.yml`), as lowercase slug segments separated by `/` — both enforced by import validation (in the PR check and at import). Absent = the table is tracked but not placed in any domain. |
 | `grain` | list of strings | no | *(omitted)* | Column names that identify a row, stored case. |
 | `synonyms` | list of strings | no | *(omitted)* | Alternative names users say; matching is case-insensitive. |
 | `is_virtual` | bool | no | `false` *(omitted)* | See [Virtual tables](#virtual-tables). Only ever appears as `is_virtual: true`. |
@@ -188,12 +188,12 @@ One file per metric, named after `name`.
 | Field | Type | Required | Default | Notes |
 |---|---|---|---|---|
 | `name` | string | **yes** | — | Stable snake_case identifier; also the filename. |
-| `display_name` | string | **yes** (at import) | — | Human name. Required at import — the PR check does not enforce it, the sync will. |
-| `expression` | string | **yes** (at import) | — | The SQL aggregate (`AVG("ORDER_VALUE")`). Required at import — the PR check does not enforce it, the sync will. Identifiers quoted, stored case. |
+| `display_name` | string | **yes** | — | Human name. Enforced by import validation — the PR check and the import both reject a metric without it. |
+| `expression` | string | **yes** | — | The SQL aggregate (`AVG("ORDER_VALUE")`). Enforced by import validation, like `display_name`. Identifiers quoted, stored case. |
 | `filters` | string | no | *(omitted)* | WHERE-clause fragment the expression assumes (`'"IS_DELIVERED" = TRUE'`). |
 | `table_schema` | string | no | *(omitted)* | Schema of the base table. Note the field name — `table_schema`, not `schema_name`. |
 | `table_name` | string | no | *(omitted)* | Base table the expression runs over. |
-| `domain_path` | string | no | *(omitted)* | Domain the metric is listed under. Same rules as on tables: must name a domain that exists in the tree, lowercase slug segments separated by `/` (enforced at import). |
+| `domain_path` | string | no | *(omitted)* | Domain the metric is listed under. Same rules as on tables: must name a domain that exists in the tree, lowercase slug segments separated by `/` (enforced by import validation). |
 | `description` | string | no | *(omitted)* | What the metric means in business terms. |
 | `notes` | string | no | *(omitted)* | Usage guidance for the agent (edge cases, what not to substitute). |
 | `precomputed_in` | string | no | *(omitted)* | Where the metric already exists materialized, if anywhere. |
@@ -241,16 +241,11 @@ The canonical form:
 - **Defaults and empties omitted** (the rule at the top of this page).
 - **Canonical ordering inside files**: columns by `ordinal` then name (no-ordinal columns last); joins sorted by `from_schema`, `from_table`, `to_schema`, `to_table`, `condition_sql`.
 - **File paths derived from content**: a table file must sit at `tables/<schema_name>/<table_name>.yml`, a metric file at `metrics/<name>.yml`.
-- **No YAML comments.** Comments don't survive re-serialization, so they fail the round-trip. Prose for the agent goes in `description`/`context_md`; prose for humans goes outside `cassis/ontology/`.
+- **No YAML comments.** Comments don't survive re-serialization, so they fail the round-trip. Prose for the agent goes in `description`/`context_md`; prose for humans goes outside `cassis/`.
 - **No unknown fields.** The parser ignores a field it doesn't know *silently* — it won't error, but the field disappears on re-serialization and the round-trip check fails. A typo'd field name (`synonymns:`) therefore shows up as "content differs after round-trip", not as "unknown field".
 - **Exact enum values.** `cardinality: many_to_one`, not `n:1` or `MANY_TO_ONE`; `source: manual`, not `Manual`. A bad enum value fails the round-trip outright.
 
-Don't hand-format to these rules — run [`../tools/validate.py`](../tools/validate.py) instead:
-
-```bash
-python tools/validate.py .        # check (what the PR check will say)
-python tools/validate.py . --fix  # rewrite files in canonical form
-```
+Don't try to memorize these rules — start from files Cassis wrote (a publish from Cassis, or the [examples](../examples/)) and keep your edits minimal, then run `cassis ontology check` before pushing: it tells you exactly which files deviate ([how to set it up](workflow.md#the-loop)). There is no automatic reformatter, so fixing a non-canonical file is a hand edit; for bulk reformatting, the reliable path is to publish from Cassis, which always writes the whole tree in canonical form.
 
 ## Identifier case
 

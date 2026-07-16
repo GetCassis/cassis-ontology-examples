@@ -1,9 +1,9 @@
 # Stallora — a complete, well-authored context
 
-Stallora is our demo dataset: a pan-European marketplace on **Snowflake** with 15 tables, 13 joins and 10 governed metrics. This is what a finished context looks like — copy the *patterns*, not the content. The tree lives in [`cassis/ontology/`](cassis/ontology/):
+Stallora is our demo dataset: a pan-European marketplace on **Snowflake** with 15 tables, 13 joins and 10 governed metrics. This is what a finished context looks like — copy the *patterns*, not the content. The tree lives in [`cassis/`](cassis/):
 
 ```text
-cassis/ontology/
+cassis/
 ├── _project.yml                     # root: global rules every question inherits
 ├── domains/
 │   ├── marketplace/
@@ -34,10 +34,10 @@ cassis/ontology/
 ## Try it
 
 ```bash
-python ../../tools/validate.py .   # from this directory
+cassis ontology check   # from this directory
 ```
 
-Every file here is byte-canonical: the validator (and the `cassis / ontology validation` check on PRs) passes.
+(Official CLI — `pip install cassis-cli`, plus a `CASSIS_API_KEY`; setup in [the workflow guide](../../docs/workflow.md#the-loop).) Every file here is byte-canonical: the CLI check (and the `cassis / ontology validation` check on PRs) passes.
 
 ## Learn more
 
