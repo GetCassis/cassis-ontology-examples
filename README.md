@@ -34,6 +34,8 @@ cassis ontology check             # from your repo root
 
 The check runs server-side via the Cassis API, so it needs network access and an API key — but it is a pure function of the files it uploads: nothing in your project is read or written, the key only authenticates the caller. Success prints `✓ YAML parsing, round-trip and import validation passed (N files).`; failures print one finding per line. Run it before you push, locally or in CI — the GitHub Action in [`.github/workflows/validate.yml`](.github/workflows/validate.yml) is a working template, and the [workflow guide](docs/workflow.md#running-the-check-in-your-own-ci) has the GitLab CI variant.
 
+The CLI can also skip git entirely: `cassis ontology upload --project <project-id>` replaces a project's context with your local tree and publishes it. That makes bootstrapping fast — edit, upload, ask the agent, repeat, no GitHub App or merge needed — and it doubles as the publish path from CI on non-GitHub hosts. Details in the [workflow guide](docs/workflow.md#uploading-straight-to-a-project).
+
 ## The short version
 
 ```text

@@ -63,6 +63,42 @@ context-check:
 
 On GitHub this duplicates the `cassis / ontology validation` check Cassis already posts on your PRs — harmless, and useful if you want the verdict inside your own pipeline; on any other CI system it's the only way to get it.
 
+## Uploading straight to a project
+
+Since cassis-cli 0.2.0, the CLI can also push the local tree **directly into a project**, skipping git entirely:
+
+```bash
+cassis ontology upload --project <project-id>                     # replace + publish
+cassis ontology upload --project <project-id> --no-publish        # replace the unpublished context only
+cassis ontology upload --project <project-id> --label "release 1"  # label the published version
+```
+
+- `--project` takes the project ID — the UUID in the project's URL in Cassis (also the `CASSIS_PROJECT_ID` env var). The other flags (`--api-key`, `--api-url`, `--base-path`, `--json`) work exactly as for `check`, and the exit codes are the same: **0** uploaded, **1** validation failed (nothing imported), **2** usage error, **3** transport/API error (including a project the key's organization can't edit).
+- It **replaces the project's entire context** with the uploaded tree, after the same validation as `check` — a failing tree is rejected with the reason (`Ontology upload rejected: Metric 'x': expression is required`) and the project is untouched.
+- By default it **publishes immediately**: success prints `✓ Ontology uploaded and published as v{n} (… tables, … domains, … joins, … metrics).` With `--no-publish`, the tree becomes the project's unpublished context, to review and publish in Cassis — except on a never-published project, where the first upload always goes live as v1.
+- Publishing is **idempotent**: re-uploading content identical to the published version reports that version instead of creating a new one, so a CI job re-running on unchanged files is a no-op.
+
+Two places it shines:
+
+- **Bootstrapping a context.** While building the first version, iterate without the GitHub App, a PR, or a merge: edit locally, `cassis ontology upload`, ask the agent, repeat. Wire up [git sync](getting-started.md) once the context stabilizes — see [getting started](getting-started.md#option-b--author-from-scratch) for the full bootstrap flow.
+- **Publishing from CI on non-GitHub hosts.** If your repository lives where the GitHub App can't reach (GitLab, Bitbucket, …), your pipeline can replicate the whole sync loop: `check` on merge requests, `upload` on the default branch. On GitLab:
+
+  ```yaml
+  context-publish:
+    image: python:3.12-slim
+    rules:
+      - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    script:
+      - pip install cassis-cli
+      - cassis ontology upload --project $CASSIS_PROJECT_ID
+    variables:
+      CASSIS_API_KEY: $CASSIS_API_KEY
+  ```
+
+  (The GitHub Actions equivalent is the same job gated on `if: github.ref == 'refs/heads/main'`.)
+
+One caution: on a project connected to the GitHub App, the repository stays the source of truth — the next import (a merge to the default branch, or a manual pull) replaces whatever you uploaded. Use `upload` for bootstrap iteration or as the publish path when git sync isn't connected; don't run both against the same project.
+
 ## Cassis-managed branches
 
 Git branch names under `cassis/` are reserved for Cassis; it creates and updates them when someone publishes from the Cassis UI. Publishing a Cassis branch named `<name>` commits to `cassis/branch/<name>` (commit message `chore(ontology): publish proposal`, or `chore(ontology): publish proposal (<label>)` when the publish carries a label) and opens a PR onto the default branch (titled "Ontology update", or "Ontology update (<label>)"). Re-publishing the same branch updates that PR in place. Merging it imports the change and marks the Cassis branch as merged.

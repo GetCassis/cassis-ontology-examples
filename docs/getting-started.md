@@ -54,15 +54,18 @@ If the repository is empty, Cassis bootstraps it with an initial README commit f
 
 From here on, the repo and Cassis agree, and you can move to the [day-to-day workflow](workflow.md).
 
-### Option B — author from scratch in git
+### Option B — author from scratch
 
-1. Copy [`examples/minimal/`](../examples/minimal/)'s `cassis/` directory into the root of your repository.
-2. Set up the CLI check: `pip install cassis-cli`, create an API key in Cassis under **Organization settings → API keys** (keys start with `sk-k6-`), and expose it as `CASSIS_API_KEY`. Optionally add the check to your CI too — see [running the check in your own CI](workflow.md#running-the-check-in-your-own-ci).
+You don't need the GitHub App to get started: while you iterate on the first version, the CLI can push your working tree straight into the project, and you wire up git sync once the context has taken shape.
+
+1. Copy [`examples/minimal/`](../examples/minimal/)'s `cassis/` directory into the root of your repository (or any local directory, to begin with).
+2. Set up the CLI: `pip install cassis-cli`, create an API key in Cassis under **Organization settings → API keys** (keys start with `sk-k6-`), and expose it as `CASSIS_API_KEY`.
 3. Edit the tree to match your warehouse — schema and table names must match exactly (see the [file reference](file-reference.md) and [authoring guide](authoring-guide.md)).
-4. Validate before you push: `cassis ontology check` from the repo root (add `--base-path` if you changed the project's **Path** setting).
-5. Commit and push to the **default branch** (or open a PR and merge it — any route that lands the files on the default branch works).
+4. Validate: `cassis ontology check` (add `--base-path` if you changed the project's **Path** setting).
+5. Iterate straight into the project: `cassis ontology upload --project <project-id>` replaces the project's context with your tree and publishes it, so you can ask the agent right away. The project ID is the UUID in the project's URL. Edit → upload → ask, as many rounds as it takes — re-uploading unchanged content is a no-op, and a broken tree is rejected without touching the project ([details](workflow.md#uploading-straight-to-a-project)).
+6. When the context stabilizes, connect the GitHub App (steps 1–2 at the top of this page), commit the tree to your repository, and push to the **default branch** (or open a PR and merge it — any route that lands the files on the default branch works).
 
-The push triggers the first import.
+The push triggers the first git import. From then on the repository is the source of truth — the next merge overwrites anything uploaded with the CLI, so switch your iteration to the [day-to-day git loop](workflow.md#the-loop).
 
 ## Confirming the first sync worked
 

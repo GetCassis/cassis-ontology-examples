@@ -33,6 +33,8 @@ A push to the repository's **default branch** that touches files under `cassis/`
 
 If the import fails (malformed YAML, missing required field), **Cassis keeps its previous context** and reports the failure on the commit instead of failing silently — see the check runs below.
 
+Git is the durable route into Cassis, not the only one: while bootstrapping a context, [`cassis ontology upload`](workflow.md#uploading-straight-to-a-project) pushes a local tree straight into a project — no GitHub App or merge needed.
+
 ### Cassis → git: publishing
 
 Publishing from the Cassis UI writes back to the repository:
