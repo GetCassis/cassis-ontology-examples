@@ -1,10 +1,10 @@
-# Validates the example context trees in this repo on every push and pull request,
-# using the official Cassis CLI (`pip install cassis-cli`).
+# Validates the example ontology trees in this repo on every push and pull
+# request, using the official Cassis CLI (`pip install cassis-cli`).
 #
 # This file doubles as a template for your own repo:
 #   1. Copy this workflow into .github/workflows/.
 #   2. Replace the two "Validate ..." steps with a single step for your own tree:
-#        - name: Validate the context
+#        - name: Validate the ontology
 #          run: cassis ontology check
 #          env:
 #            CASSIS_API_KEY: ${{ secrets.CASSIS_API_KEY }}
@@ -19,8 +19,9 @@
 #
 # Cassis itself also posts a "cassis / ontology validation" check on pull
 # requests that touch the tree; this workflow gives you the same verdict
-# inside your own CI — and on GitLab, see the GitLab CI snippet in
-# docs/workflow.md.
+# inside your own CI. For the GitLab CI variant, an eval-suite job to gate
+# merges, and the publish job for non-GitHub hosts, see
+# https://docs.getcassis.com/cli/#ci
 
 name: validate
 

@@ -1,6 +1,6 @@
-# Minimal — the smallest realistic context
+# Minimal — the smallest realistic ontology
 
-A tiny but complete context for a Postgres store: two tables (`public.customers`, `public.orders`), one domain, one join, one governed metric, and a root `_project.yml` with the global rules. Six files total under [`cassis/`](cassis/).
+A tiny but complete ontology for a Postgres store: two tables (`public.customers`, `public.orders`), one domain, one join, one governed metric, and a root `_project.yml` with the global rules. Six files total under [`cassis/`](cassis/).
 
 It shows the essentials in isolation:
 
@@ -19,6 +19,6 @@ cp -R examples/minimal/cassis /path/to/your-repo/cassis
 cassis ontology check /path/to/your-repo   # should pass before you start editing
 ```
 
-(The check is the official CLI — `pip install cassis-cli`, plus a `CASSIS_API_KEY`; setup in [the workflow guide](../../docs/workflow.md#the-loop).)
+(The check is the official CLI — `pip install cassis-cli`, plus a `CASSIS_API_KEY`; setup at [docs.getcassis.com/cli](https://docs.getcassis.com/cli/#auth).)
 
-Then replace the tables with your own (schema and table names must match the file paths: `tables/<schema_name>/<table_name>.yml`), rewrite the rules in `_project.yml`, and re-run the check as you go. See the [file reference](../../docs/file-reference.md) for every field and the [authoring guide](../../docs/authoring-guide.md) for what good context looks like.
+Then replace the tables with your own (schema and table names must match the file paths: `tables/<schema_name>/<table_name>.yml`), rewrite the rules in `_project.yml`, and re-run the check as you go. See the [file format](https://docs.getcassis.com/file-format/) for every field, and `cassis/AGENTS.md` (written by `cassis ontology fmt`) for what good modeling looks like.
