@@ -1,6 +1,6 @@
-# Stallora — a complete, well-authored context
+# Stallora — a complete, well-authored ontology
 
-Stallora is our demo dataset: a pan-European marketplace on **Snowflake** with 15 tables, 13 joins and 10 governed metrics. This is what a finished context looks like — copy the *patterns*, not the content. The tree lives in [`cassis/`](cassis/):
+Stallora is our demo dataset: a pan-European marketplace on **Snowflake** with 15 tables, 13 joins and 10 governed metrics. This is what a finished ontology looks like — copy the *patterns*, not the content. The tree lives in [`cassis/`](cassis/):
 
 ```text
 cassis/
@@ -29,7 +29,7 @@ cassis/
 
 **Joins have descriptions, and the descriptions do real work.** `joins.yml` warns about the fan-out on `GEOLOCATION` ("NEVER join directly … collapse to one row per prefix first") and flags the partial bridge between acquisition and marketplace data. A join that silently multiplies rows is the classic wrong-number generator; say it where the agent will read it.
 
-**Identifier case matches the warehouse.** This is Snowflake, so schema, tables and columns are UPPERCASE, and SQL snippets in metric expressions quote identifiers with their exact stored case (`AVG("ORDER_VALUE")`). Your context must use the identifier case your warehouse actually stores — compare with [`../minimal/`](../minimal/), the same format over a lowercase Postgres schema.
+**Identifier case matches the warehouse.** This is Snowflake, so schema, tables and columns are UPPERCASE, and SQL snippets in metric expressions quote identifiers with their exact stored case (`AVG("ORDER_VALUE")`). Your ontology must use the identifier case your warehouse actually stores — compare with [`../minimal/`](../minimal/), the same format over a lowercase Postgres schema.
 
 ## Try it
 
@@ -37,9 +37,10 @@ cassis/
 cassis ontology check   # from this directory
 ```
 
-(Official CLI — `pip install cassis-cli`, plus a `CASSIS_API_KEY`; setup in [the workflow guide](../../docs/workflow.md#the-loop).) Every file here is byte-canonical: the CLI check (and the `cassis / ontology validation` check on PRs) passes.
+(Official CLI — `pip install cassis-cli`, plus a `CASSIS_API_KEY`; setup at [docs.getcassis.com/cli](https://docs.getcassis.com/cli/#auth).) Every file here is byte-canonical: the CLI check (and the `cassis / ontology validation` check on PRs) passes.
 
 ## Learn more
 
-- [Authoring guide](../../docs/authoring-guide.md) — how to write context that makes the agent accurate
-- [File reference](../../docs/file-reference.md) — every file type, field by field
+- [File format](https://docs.getcassis.com/file-format/) — every file type, field by field
+- [Ontology in git](https://docs.getcassis.com/git/) — the sync model and the pull request loop
+- `cassis/AGENTS.md` in your own checkout — how to write an ontology that makes the agent accurate
