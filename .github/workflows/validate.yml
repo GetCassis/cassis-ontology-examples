@@ -1,15 +1,20 @@
 # Validates the two example ontology trees in this repository with the official
 # Cassis CLI (`pip install cassis-cli`).
 #
-# `cassis ontology fmt --check` runs locally, with no API key, so it always
-# runs. It proves both trees are still canonical for the current CLI, and it
-# goes red when a CLI release changes the canonical form, as 1.1.0 did when
-# domains became Markdown. That is the signal to run `cassis ontology fmt` here
-# and commit the result, including the refreshed cassis/AGENTS.md.
+# Two checks per tree:
+#   - `cassis ontology fmt --check` proves the tree is still canonical for the
+#     current CLI. It goes red when a release changes the canonical form, as
+#     1.1.0 did when domains became Markdown, which is the signal to run
+#     `cassis ontology fmt` here and commit the result, refreshed AGENTS.md
+#     included. The CLI is deliberately unpinned so that this surfaces.
+#   - `cassis ontology check` runs the same YAML, round-trip and import
+#     validation as the `cassis / ontology validation` check on pull requests.
 #
-# `cassis ontology check` calls the Cassis API, so it needs the CASSIS_API_KEY
-# secret. The job detects whether the secret is set and skips gracefully when it
-# isn't, since fork pull requests never get repository secrets.
+# Both call the Cassis API, so both need the CASSIS_API_KEY secret. The job
+# detects whether it is set and skips gracefully when it isn't, since fork pull
+# requests never get repository secrets. Note what that means: with no secret on
+# this repository, every run below is a no-op that reports green. Set the secret
+# (create a key under Organization settings -> API keys) for real coverage.
 #
 # This workflow validates trees that live under examples/, so it runs one step
 # per tree. In your own repository the ontology sits at the root, so it is a
@@ -24,28 +29,17 @@ on:
   pull_request:
 
 jobs:
-  canonical:
+  validate:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - run: pip install cassis-cli
-      - name: The minimal example is canonical
-        run: cassis ontology fmt --check examples/minimal
-      - name: The Stallora example is canonical
-        run: cassis ontology fmt --check examples/stallora
-
-  ontology-check:
-    runs-on: ubuntu-latest
+    env:
+      CASSIS_API_KEY: ${{ secrets.CASSIS_API_KEY }}
     steps:
       - name: Check whether CASSIS_API_KEY is available
         id: key
         run: echo "present=${{ secrets.CASSIS_API_KEY != '' }}" >> "$GITHUB_OUTPUT"
       - name: Note when validation is skipped
         if: steps.key.outputs.present != 'true'
-        run: echo "CASSIS_API_KEY secret not available, skipping the import validation."
+        run: echo "CASSIS_API_KEY secret not available, skipping the ontology checks."
       - uses: actions/checkout@v4
         if: steps.key.outputs.present == 'true'
       - uses: actions/setup-python@v5
@@ -54,13 +48,15 @@ jobs:
           python-version: "3.12"
       - run: pip install cassis-cli
         if: steps.key.outputs.present == 'true'
+      - name: The minimal example is canonical
+        if: steps.key.outputs.present == 'true'
+        run: cassis ontology fmt --check examples/minimal
       - name: Validate the minimal example
         if: steps.key.outputs.present == 'true'
         run: cassis ontology check examples/minimal
-        env:
-          CASSIS_API_KEY: ${{ secrets.CASSIS_API_KEY }}
+      - name: The Stallora example is canonical
+        if: steps.key.outputs.present == 'true'
+        run: cassis ontology fmt --check examples/stallora
       - name: Validate the Stallora example
         if: steps.key.outputs.present == 'true'
         run: cassis ontology check examples/stallora
-        env:
-          CASSIS_API_KEY: ${{ secrets.CASSIS_API_KEY }}
