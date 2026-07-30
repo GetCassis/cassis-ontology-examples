@@ -1,11 +1,11 @@
 # Minimal — the smallest realistic ontology
 
-A tiny but complete ontology for a Postgres store: two tables (`public.customers`, `public.orders`), one domain, one join, one governed metric, and a root `_project.yml` with the global rules. Six files total under [`cassis/`](cassis/).
+A tiny but complete ontology for a Postgres store: two tables (`public.customers`, `public.orders`), one domain, one join, one governed metric, and a root domain (`domains/README.md`) with the global rules, under [`cassis/`](cassis/).
 
 It shows the essentials in isolation:
 
-- `_project.yml` — global rules in `context_md` (currency, the "revenue = completed orders" rule, how to count customers)
-- `domains/sales/_domain.yml` — one domain grouping the two tables, with routing and caveat notes
+- `domains/README.md` — the root domain: global rules in its Markdown body (currency, the "revenue = completed orders" rule, how to count customers)
+- `domains/sales/README.md` — one domain grouping the two tables, with routing and caveat notes
 - `tables/public/{customers,orders}.yml` — grain, caveats, column descriptions, `nullable: false` where it matters
 - `joins.yml` — one join with `column_pairs`, a `cardinality` (`many_to_one`), and a description
 - `metrics/total_revenue.yml` — `expression` + `filters` + `synonyms` + `unit`
@@ -21,4 +21,4 @@ cassis ontology check /path/to/your-repo   # should pass before you start editin
 
 (The check is the official CLI — `pip install cassis-cli`, plus a `CASSIS_API_KEY`; setup at [docs.getcassis.com/cli](https://docs.getcassis.com/cli/#auth).)
 
-Then replace the tables with your own (schema and table names must match the file paths: `tables/<schema_name>/<table_name>.yml`), rewrite the rules in `_project.yml`, and re-run the check as you go. See the [file format](https://docs.getcassis.com/file-format/) for every field, and `cassis/AGENTS.md` (written by `cassis ontology fmt`) for what good modeling looks like.
+Then replace the tables with your own (schema and table names must match the file paths: `tables/<schema_name>/<table_name>.yml`), rewrite the rules in `domains/README.md`, and re-run the check as you go. See the [file format](https://docs.getcassis.com/file-format/) for every field, and `cassis/AGENTS.md` (written by `cassis ontology fmt`) for what good modeling looks like.
