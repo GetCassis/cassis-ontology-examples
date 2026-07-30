@@ -5,7 +5,7 @@
 | What you were looking for | Where it is now |
 |---|---|
 | Required fields, and the import-validation rules | [File format → Required fields](https://docs.getcassis.com/file-format/#required) |
-| Domain files (`_project.yml`, `_domain.yml`) | [File format → Domains](https://docs.getcassis.com/file-format/#domains) |
+| Domain files (Markdown `README.md` since cassis-cli 1.1.0, previously `_project.yml` and `_domain.yml`) | [File format → Domains](https://docs.getcassis.com/file-format/#domains) |
 | Table and column fields, virtual tables | [File format → Tables and columns](https://docs.getcassis.com/file-format/#tables) |
 | Join fields | [File format → Joins](https://docs.getcassis.com/file-format/#joins) |
 | Metric fields | [File format → Metrics](https://docs.getcassis.com/file-format/#metrics) |

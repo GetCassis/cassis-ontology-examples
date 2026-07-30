@@ -10,6 +10,8 @@
 | What must not be in the tree | [File format → What must not be in the tree](https://docs.getcassis.com/file-format/#not-in-tree) |
 | The legacy `cassis/ontology/` layout | [File format → Repository layout](https://docs.getcassis.com/file-format/#layout) |
 
+> **The domain format changed.** Since cassis-cli 1.1.0 a domain is the `README.md` of a directory under `cassis/domains/`, with YAML frontmatter and the prose in the body. The old `_project.yml` and `_domain.yml` files still import, and `cassis ontology fmt` converts them. See [File format → Domains](https://docs.getcassis.com/file-format/#domains).
+
 > **One correction.** This page used to say that non-YAML files in the ontology directory don't survive an export. They do now: a push or publish replaces only the ontology's own YAML, so a README or the managed `AGENTS.md` can live there safely.
 
 This repository keeps the [example ontology trees](../examples/). See the [README](../README.md).

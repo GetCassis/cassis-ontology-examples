@@ -1,27 +1,20 @@
-# Validates the example ontology trees in this repo on every push and pull
-# request, using the official Cassis CLI (`pip install cassis-cli`).
+# Validates the two example ontology trees in this repository with the official
+# Cassis CLI (`pip install cassis-cli`).
 #
-# This file doubles as a template for your own repo:
-#   1. Copy this workflow into .github/workflows/.
-#   2. Replace the two "Validate ..." steps with a single step for your own tree:
-#        - name: Validate the ontology
-#          run: cassis ontology check
-#          env:
-#            CASSIS_API_KEY: ${{ secrets.CASSIS_API_KEY }}
-#      (run from the repo root; add --base-path if your project's Path setting
-#      isn't the default "cassis".)
-#   3. Add the CASSIS_API_KEY secret to the repo — create the key in Cassis
-#      under Organization settings → API keys (keys start with sk-k6-).
+# `cassis ontology fmt --check` runs locally, with no API key, so it always
+# runs. It proves both trees are still canonical for the current CLI, and it
+# goes red when a CLI release changes the canonical form, as 1.1.0 did when
+# domains became Markdown. That is the signal to run `cassis ontology fmt` here
+# and commit the result, including the refreshed cassis/AGENTS.md.
 #
-# The check calls the Cassis API, so it needs the secret. The first step below
-# detects whether it is set and skips validation gracefully when it isn't
-# (fork PRs and secretless checkouts don't get access to repo secrets).
+# `cassis ontology check` calls the Cassis API, so it needs the CASSIS_API_KEY
+# secret. The job detects whether the secret is set and skips gracefully when it
+# isn't, since fork pull requests never get repository secrets.
 #
-# Cassis itself also posts a "cassis / ontology validation" check on pull
-# requests that touch the tree; this workflow gives you the same verdict
-# inside your own CI. For the GitLab CI variant, an eval-suite job to gate
-# merges, and the publish job for non-GitHub hosts, see
-# https://docs.getcassis.com/cli/#ci
+# This workflow validates trees that live under examples/, so it runs one step
+# per tree. In your own repository the ontology sits at the root, so it is a
+# single `cassis ontology check`. Copy-paste recipes for your own CI, including
+# the eval and publish jobs, are at https://docs.getcassis.com/cli/#ci
 
 name: validate
 
@@ -31,7 +24,20 @@ on:
   pull_request:
 
 jobs:
-  validate:
+  canonical:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install cassis-cli
+      - name: The minimal example is canonical
+        run: cassis ontology fmt --check examples/minimal
+      - name: The Stallora example is canonical
+        run: cassis ontology fmt --check examples/stallora
+
+  ontology-check:
     runs-on: ubuntu-latest
     steps:
       - name: Check whether CASSIS_API_KEY is available
@@ -39,7 +45,7 @@ jobs:
         run: echo "present=${{ secrets.CASSIS_API_KEY != '' }}" >> "$GITHUB_OUTPUT"
       - name: Note when validation is skipped
         if: steps.key.outputs.present != 'true'
-        run: echo "CASSIS_API_KEY secret not available — skipping the context checks."
+        run: echo "CASSIS_API_KEY secret not available, skipping the import validation."
       - uses: actions/checkout@v4
         if: steps.key.outputs.present == 'true'
       - uses: actions/setup-python@v5
