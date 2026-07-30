@@ -9,6 +9,7 @@ It shows the essentials in isolation:
 - `tables/public/{customers,orders}.yml` — grain, caveats, column descriptions, `nullable: false` where it matters
 - `joins.yml` — one join with `column_pairs`, a `cardinality` (`many_to_one`), and a description
 - `metrics/total_revenue.yml` — `expression` + `filters` + `synonyms` + `unit`
+- `AGENTS.md` — the modeling guide, written and kept current by the CLI, so a copy of this tree lands with the doctrine already in place
 
 Note the identifier case: this is Postgres, so everything is lowercase. On Snowflake it would typically be UPPERCASE — see [`../stallora/`](../stallora/). Always match the case your warehouse stores.
 

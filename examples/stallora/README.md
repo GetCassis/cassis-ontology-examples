@@ -4,11 +4,11 @@ Stallora is our demo dataset: a pan-European marketplace on **Snowflake** with 1
 
 ```text
 cassis/
-├── project.yml                      # project identity: id + format version
+├── AGENTS.md                        # the modeling guide, written by the CLI
 ├── domains/
 │   ├── README.md                    # root: global rules every question inherits
 │   ├── marketplace/
-│   │   ├── README.md               # the transactional core
+│   │   ├── README.md                # the transactional core
 │   │   ├── geography/               # topic docs written as child domains (each a README.md)
 │   │   ├── measuring-sales/
 │   │   └── seller-performance/
@@ -23,6 +23,8 @@ cassis/
 **The root domain (`domains/README.md`) carries the rules that apply to every question.** Its Markdown body states the currency-rendering rule, the "realized sales = delivered orders" default, the counting rule (distinct `CUSTOMER_UNIQUE_ID`, never the per-order `CUSTOMER_ID`), and the data's date range. It ends with the **governed-metrics rule**: it names the ten metrics and tells the agent to use their definitions exactly instead of re-deriving them. Global rules belong here and nowhere else — stating them once is what makes them consistent.
 
 **Topic docs are child domains.** `marketplace/measuring-sales` is not a folder of tables — it is a short essay ("where money lives, the delivered-only rule, BV/GMV vocabulary, counting rules") that the agent can open like any domain. The parent `marketplace/README.md` routes to these topics with relative links. When a subject needs more than a table description can hold, give it a child domain.
+
+**The nav block at the bottom of a domain is generated.** Everything between the `cassis:nav` markers lists the domain's tables and metrics, and `cassis ontology fmt` writes it. Write your prose above it and leave it alone: a stale or hand-edited nav block fails the check.
 
 **Table descriptions carry grain and caveats.** Look at `tables/STALLORA/ORDERS.yml`: "One row per order", where money does *not* live, and the trap ("about 9,300 orders have no order item rows at all … LEFT JOIN from orders when item data might be absent"). Column descriptions enumerate value lists (`ORDER_STATUS`) and define derived vocabulary ("an order is late when…"). Grain, value lists, and known data gaps on the table; cross-table rules on the domain.
 
