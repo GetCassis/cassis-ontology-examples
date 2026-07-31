@@ -20,6 +20,6 @@ cp -R examples/minimal/cassis /path/to/your-repo/cassis
 cassis ontology check /path/to/your-repo   # should pass before you start editing
 ```
 
-(The check is the official CLI — `pip install cassis-cli`, plus a `CASSIS_API_KEY`; setup at [docs.getcassis.com/cli](https://docs.getcassis.com/cli/#auth).)
+(The check is the official CLI — `pip install cassis-cli`, plus a `CASSIS_API_KEY`; setup at [docs.getcassis.com/cli](https://docs.getcassis.com/cli/#auth).) Once the repo is bound to a project, `check` also cross-checks references against *your* source schema — the copied `public.customers`/`public.orders` will show as advisory warnings until you replace them with your own tables. Warnings never fail the check.
 
 Then replace the tables with your own (schema and table names must match the file paths: `tables/<schema_name>/<table_name>.yml`), rewrite the rules in `domains/README.md`, and re-run the check as you go. See the [file format](https://docs.getcassis.com/file-format/) for every field, and `cassis/AGENTS.md` (written by `cassis ontology fmt`) for what good modeling looks like.

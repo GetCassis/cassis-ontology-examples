@@ -3,12 +3,16 @@
 #
 # Two checks per tree:
 #   - `cassis ontology fmt --check` proves the tree is still canonical for the
-#     current CLI. It goes red when a release changes the canonical form, as
-#     1.1.0 did when domains became Markdown, which is the signal to run
-#     `cassis ontology fmt` here and commit the result, refreshed AGENTS.md
-#     included. The CLI is deliberately unpinned so that this surfaces.
+#     current CLI. It goes red when a release changes the canonical form (as
+#     1.1.0 did when domains became Markdown) or the bundled modeling guide
+#     (as 1.2.0 did with doctrine v5) — the signal to run `cassis ontology fmt`
+#     here and commit the result, refreshed AGENTS.md included. The CLI is
+#     deliberately unpinned so that this surfaces.
 #   - `cassis ontology check` runs the same YAML, round-trip and import
 #     validation as the `cassis / ontology validation` check on pull requests.
+#     (In a checkout bound to a project it also cross-checks references against
+#     the source schema — advisory warnings only. These example trees are not
+#     bound to a project, so the check reports that stage as skipped here.)
 #
 # Both call the Cassis API, so both need the CASSIS_API_KEY secret. The job
 # detects whether it is set and skips gracefully when it isn't, since fork pull

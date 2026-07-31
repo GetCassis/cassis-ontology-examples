@@ -11,6 +11,6 @@
 | Cassis-managed branches | [Ontology in git → Cassis-managed branches](https://docs.getcassis.com/git/#managed-branches) |
 | The troubleshooting table | [Ontology in git → Troubleshooting](https://docs.getcassis.com/git/#troubleshooting) |
 
-The CLI has grown since this page was written: it now also formats (`fmt`), downloads (`pull`), probes questions through the agent (`ontology test`), and runs your eval suite (`eval run`). See [docs.getcassis.com/cli](https://docs.getcassis.com/cli/).
+The CLI has grown since this page was written: it now also formats (`fmt`), downloads the ontology (`ontology pull`) and a local source-schema snapshot (`schema pull`), probes questions through the agent (`ontology test`), runs your eval suite (`eval run`), and manages its cases (`eval add-case`, `eval list-cases`, `eval delete-case`). See [docs.getcassis.com/cli](https://docs.getcassis.com/cli/).
 
 This repository keeps the [example ontology trees](../examples/). See the [README](../README.md).

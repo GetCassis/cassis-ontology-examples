@@ -1,2 +1,5 @@
 __pycache__/
 *.pyc
+
+# Written by `cassis schema pull` — observed state, never committed
+.schema.json

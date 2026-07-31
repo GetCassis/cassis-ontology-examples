@@ -14,11 +14,14 @@ Both trees are canonical for the current CLI, and both carry the managed `cassis
 Copy one, point it at your own warehouse, and validate it:
 
 ```bash
-pip install cassis-cli            # 1.1.0 or newer
+pip install cassis-cli            # 1.2.0 or newer
 export CASSIS_API_KEY=sk-k6-...   # Organization settings → API keys
+cassis schema pull                # gitignored .schema.json snapshot of your source schema
 cassis ontology fmt               # canonical formatting, refreshes cassis/AGENTS.md
 cassis ontology check             # the same validation as the pull request check
 ```
+
+In a checkout bound to a project (`cassis/project.yml`, `--project`, or `CASSIS_PROJECT_ID`), `check` also cross-checks the tree against your source schema: references to tables or columns the warehouse doesn't have print as **advisory warnings** — they never fail the check. A freshly copied example will warn about every table until you remodel it onto your own schema; that's expected.
 
 ## Domains are Markdown files
 

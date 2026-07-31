@@ -18,6 +18,8 @@ cassis/
 └── metrics/*.yml                    # one file per governed metric
 ```
 
+(A live checkout also carries `project.yml`, written by `cassis ontology pull` or a publish, and — after `cassis schema pull` — a gitignored `.schema.json` snapshot of the source schema. Neither is part of the example.)
+
 ## What to notice
 
 **The root domain (`domains/README.md`) carries the rules that apply to every question.** Its Markdown body states the currency-rendering rule, the "realized sales = delivered orders" default, the counting rule (distinct `CUSTOMER_UNIQUE_ID`, never the per-order `CUSTOMER_ID`), and the data's date range. It ends with the **governed-metrics rule**: it names the ten metrics and tells the agent to use their definitions exactly instead of re-deriving them. Global rules belong here and nowhere else — stating them once is what makes them consistent.
@@ -40,7 +42,7 @@ cassis/
 cassis ontology check   # from this directory
 ```
 
-(Official CLI — `pip install cassis-cli`, plus a `CASSIS_API_KEY`; setup at [docs.getcassis.com/cli](https://docs.getcassis.com/cli/#auth).) Every file here is byte-canonical: the CLI check (and the `cassis / ontology validation` check on PRs) passes.
+(Official CLI — `pip install cassis-cli`, plus a `CASSIS_API_KEY`; setup at [docs.getcassis.com/cli](https://docs.getcassis.com/cli/#auth).) Every file here is byte-canonical: the CLI check (and the `cassis / ontology validation` check on PRs) passes. This copy of the tree isn't bound to a project, so `check` notes the schema-reference stage as skipped; in your own bound checkout it also cross-checks references against your source schema (advisory warnings, never failures).
 
 ## Learn more
 
