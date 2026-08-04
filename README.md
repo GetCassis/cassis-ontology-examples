@@ -14,7 +14,7 @@ Both trees are canonical for the current CLI, and both carry the managed `cassis
 Copy one, point it at your own warehouse, and validate it:
 
 ```bash
-pip install cassis-cli            # 1.2.0 or newer
+pip install cassis-cli            # 1.3.0 or newer
 export CASSIS_API_KEY=sk-k6-...   # Organization settings → API keys
 cassis schema pull                # gitignored .schema.json snapshot of your source schema
 cassis ontology fmt               # canonical formatting, refreshes cassis/AGENTS.md
