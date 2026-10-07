@@ -1,6 +1,6 @@
-# Minimal — the smallest realistic ontology
+# Minimal — the smallest realistic context
 
-A tiny but complete ontology for a Postgres store: two tables (`public.customers`, `public.orders`), one domain, one join, one governed metric, and a root domain (`domains/README.md`) with the global rules, under [`cassis/`](cassis/).
+A tiny but complete context for a Postgres store: two tables (`public.customers`, `public.orders`), one domain, one join, one governed metric, and a root domain (`domains/README.md`) with the global rules, under [`cassis/`](cassis/).
 
 It shows the essentials in isolation:
 
@@ -17,9 +17,9 @@ Note the identifier case: this is Postgres, so everything is lowercase. On Snowf
 
 ```bash
 cp -R examples/minimal/cassis /path/to/your-repo/cassis
-cassis ontology check /path/to/your-repo   # should pass before you start editing
+cassis context check /path/to/your-repo    # should pass before you start editing
 ```
 
 (The check is the official CLI — `pip install cassis-cli`, plus a `CASSIS_API_KEY`; setup at [docs.getcassis.com/cli](https://docs.getcassis.com/cli/#auth).) Once the repo is bound to a project, `check` also cross-checks references against *your* source schema — the copied `public.customers`/`public.orders` will show as advisory warnings until you replace them with your own tables. Warnings never fail the check.
 
-Then replace the tables with your own (schema and table names must match the file paths: `tables/<schema_name>/<table_name>.yml`), rewrite the rules in `domains/README.md`, and re-run the check as you go. See the [file format](https://docs.getcassis.com/file-format/) for every field, and `cassis/AGENTS.md` (written by `cassis ontology fmt`) for what good modeling looks like.
+Then replace the tables with your own (schema and table names must match the file paths: `tables/<schema_name>/<table_name>.yml`), rewrite the rules in `domains/README.md`, and re-run the check as you go. See the [file format](https://docs.getcassis.com/file-format/) for every field, and `cassis/AGENTS.md` (written by `cassis context fmt`) for what good modeling looks like.
