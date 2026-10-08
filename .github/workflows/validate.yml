@@ -1,14 +1,14 @@
-# Validates the two example ontology trees in this repository with the official
+# Validates the two example context trees in this repository with the official
 # Cassis CLI (`pip install cassis-cli`).
 #
 # Two checks per tree:
-#   - `cassis ontology fmt --check` proves the tree is still canonical for the
+#   - `cassis context fmt --check` proves the tree is still canonical for the
 #     current CLI. It goes red when a release changes the canonical form (as
 #     1.1.0 did when domains became Markdown) or the bundled modeling guide
-#     (as 1.2.0 did with doctrine v5) — the signal to run `cassis ontology fmt`
+#     (as 1.2.0 did with doctrine v5) — the signal to run `cassis context fmt`
 #     here and commit the result, refreshed AGENTS.md included. The CLI is
 #     deliberately unpinned so that this surfaces.
-#   - `cassis ontology check` runs the same YAML, round-trip and import
+#   - `cassis context check` runs the same YAML, round-trip and import
 #     validation as the `cassis / ontology validation` check on pull requests.
 #     (In a checkout bound to a project it also cross-checks references against
 #     the source schema — advisory warnings only. These example trees are not
@@ -21,9 +21,9 @@
 # (create a key under Organization settings -> API keys) for real coverage.
 #
 # This workflow validates trees that live under examples/, so it runs one step
-# per tree. In your own repository the ontology sits at the root, so it is a
-# single `cassis ontology check`. Copy-paste recipes for your own CI, including
-# the eval and publish jobs, are at https://docs.getcassis.com/cli/#ci
+# per tree. In your own repository the context tree sits at the root, so it
+# is a single `cassis context check`. Copy-paste recipes for your own CI,
+# including the eval and publish jobs, are at https://docs.getcassis.com/cli/#ci
 
 name: validate
 
@@ -43,7 +43,7 @@ jobs:
         run: echo "present=${{ secrets.CASSIS_API_KEY != '' }}" >> "$GITHUB_OUTPUT"
       - name: Note when validation is skipped
         if: steps.key.outputs.present != 'true'
-        run: echo "CASSIS_API_KEY secret not available, skipping the ontology checks."
+        run: echo "CASSIS_API_KEY secret not available, skipping the context checks."
       - uses: actions/checkout@v4
         if: steps.key.outputs.present == 'true'
       - uses: actions/setup-python@v5
@@ -54,13 +54,13 @@ jobs:
         if: steps.key.outputs.present == 'true'
       - name: The minimal example is canonical
         if: steps.key.outputs.present == 'true'
-        run: cassis ontology fmt --check examples/minimal
+        run: cassis context fmt --check examples/minimal
       - name: Validate the minimal example
         if: steps.key.outputs.present == 'true'
-        run: cassis ontology check examples/minimal
+        run: cassis context check examples/minimal
       - name: The Stallora example is canonical
         if: steps.key.outputs.present == 'true'
-        run: cassis ontology fmt --check examples/stallora
+        run: cassis context fmt --check examples/stallora
       - name: Validate the Stallora example
         if: steps.key.outputs.present == 'true'
-        run: cassis ontology check examples/stallora
+        run: cassis context check examples/stallora

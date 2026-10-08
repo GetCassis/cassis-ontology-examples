@@ -12,6 +12,6 @@
 | Canonical form | [File format → Canonical form](https://docs.getcassis.com/file-format/#canonical) |
 | Identifier case | [File format → Identifier case](https://docs.getcassis.com/file-format/#case) |
 
-> **One correction.** This page used to say there is no automatic reformatter. There is: [`cassis ontology fmt`](https://docs.getcassis.com/cli/#fmt) rewrites the tree in canonical form, so canonical form is no longer something you hand-maintain.
+> **One correction.** This page used to say there is no automatic reformatter. There is: [`cassis context fmt`](https://docs.getcassis.com/cli/#fmt) rewrites the tree in canonical form, so canonical form is no longer something you hand-maintain.
 
-This repository keeps the [example ontology trees](../examples/). See the [README](../README.md).
+This repository keeps the [example context trees](../examples/). See the [README](../README.md).

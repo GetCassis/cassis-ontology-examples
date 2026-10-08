@@ -1,6 +1,6 @@
-# Stallora — a complete, well-authored ontology
+# Stallora — a complete, well-authored context
 
-Stallora is our demo dataset: a pan-European marketplace on **Snowflake** with 15 tables, 13 joins and 10 governed metrics. This is what a finished ontology looks like — copy the *patterns*, not the content. The tree lives in [`cassis/`](cassis/):
+Stallora is our demo dataset: a pan-European marketplace on **Snowflake** with 15 tables, 13 joins and 10 governed metrics. This is what a finished context looks like — copy the *patterns*, not the content. The tree lives in [`cassis/`](cassis/):
 
 ```text
 cassis/
@@ -18,7 +18,7 @@ cassis/
 └── metrics/*.yml                    # one file per governed metric
 ```
 
-(A live checkout also carries `project.yml`, written by `cassis ontology pull` or a publish, and — after `cassis schema pull` — a gitignored `.schema.json` snapshot of the source schema. Neither is part of the example.)
+(A live checkout also carries `project.yml`, written by `cassis context pull` or a publish, and — after `cassis schema pull` — a gitignored `.schema.json` snapshot of the source schema. Neither is part of the example.)
 
 ## What to notice
 
@@ -26,7 +26,7 @@ cassis/
 
 **Topic docs are child domains.** `marketplace/measuring-sales` is not a folder of tables — it is a short essay ("where money lives, the delivered-only rule, BV/GMV vocabulary, counting rules") that the agent can open like any domain. The parent `marketplace/README.md` routes to these topics with relative links. When a subject needs more than a table description can hold, give it a child domain.
 
-**The nav block at the bottom of a domain is generated.** Everything between the `cassis:nav` markers lists the domain's tables and metrics, and `cassis ontology fmt` writes it. Write your prose above it and leave it alone: a stale or hand-edited nav block fails the check.
+**The nav block at the bottom of a domain is generated.** Everything between the `cassis:nav` markers lists the domain's tables and metrics, and `cassis context fmt` writes it. Write your prose above it and leave it alone: a stale or hand-edited nav block fails the check.
 
 **Table descriptions carry grain and caveats.** Look at `tables/STALLORA/ORDERS.yml`: "One row per order", where money does *not* live, and the trap ("about 9,300 orders have no order item rows at all … LEFT JOIN from orders when item data might be absent"). Column descriptions enumerate value lists (`ORDER_STATUS`) and define derived vocabulary ("an order is late when…"). Grain, value lists, and known data gaps on the table; cross-table rules on the domain.
 
@@ -34,12 +34,12 @@ cassis/
 
 **Joins have descriptions, and the descriptions do real work.** `joins.yml` warns about the fan-out on `GEOLOCATION` ("NEVER join directly … collapse to one row per prefix first") and flags the partial bridge between acquisition and marketplace data. A join that silently multiplies rows is the classic wrong-number generator; say it where the agent will read it.
 
-**Identifier case matches the warehouse.** This is Snowflake, so schema, tables and columns are UPPERCASE, and SQL snippets in metric expressions quote identifiers with their exact stored case (`AVG("ORDER_VALUE")`). Your ontology must use the identifier case your warehouse actually stores — compare with [`../minimal/`](../minimal/), the same format over a lowercase Postgres schema.
+**Identifier case matches the warehouse.** This is Snowflake, so schema, tables and columns are UPPERCASE, and SQL snippets in metric expressions quote identifiers with their exact stored case (`AVG("ORDER_VALUE")`). Your context must use the identifier case your warehouse actually stores — compare with [`../minimal/`](../minimal/), the same format over a lowercase Postgres schema.
 
 ## Try it
 
 ```bash
-cassis ontology check   # from this directory
+cassis context check   # from this directory
 ```
 
 (Official CLI — `pip install cassis-cli`, plus a `CASSIS_API_KEY`; setup at [docs.getcassis.com/cli](https://docs.getcassis.com/cli/#auth).) Every file here is byte-canonical: the CLI check (and the `cassis / ontology validation` check on PRs) passes. This copy of the tree isn't bound to a project, so `check` notes the schema-reference stage as skipped; in your own bound checkout it also cross-checks references against your source schema (advisory warnings, never failures).
@@ -47,5 +47,5 @@ cassis ontology check   # from this directory
 ## Learn more
 
 - [File format](https://docs.getcassis.com/file-format/) — every file type, field by field
-- [Ontology in git](https://docs.getcassis.com/git/) — the sync model and the pull request loop
-- `cassis/AGENTS.md` in your own checkout — how to write an ontology that makes the agent accurate
+- [Context in git](https://docs.getcassis.com/git/) — the sync model and the pull request loop
+- `cassis/AGENTS.md` in your own checkout — how to write a context that makes the agent accurate
