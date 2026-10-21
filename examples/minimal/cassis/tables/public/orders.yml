@@ -10,7 +10,11 @@ columns:
   nullable: false
   ordinal: 1
 - data_type: text
-  description: 'Order lifecycle status. Values: pending, completed, cancelled. Revenue counts completed orders only.'
+  description: Order lifecycle status. Revenue counts completed orders only.
+  enum_values:
+  - value: pending
+  - value: completed
+  - value: cancelled
   name: status
   nullable: false
   ordinal: 2
